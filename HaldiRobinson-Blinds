@@ -1,0 +1,150 @@
+EnergyManagementSystem:Program,
+ Haldi_Blinds, !- Name
+ set alpha=1.708, !- Program Line 1
+ set unshadedfrac=1-blinds, !- Program Line 2
+ if arr_event==1, !- A4
+ set handle=A26+B31*daylight+B32*unshadedfrac, !- A5
+ set handle=@Exp handle, !- A6
+ set R=@RandomUniform 0 1,!- A7
+ set handle=handle/(handle+1), !- A8 % <--Lowering probability at arrival
+ if handle>R, !- A9
+ set handle=A28+B35*E_glob+B36*unshadedfrac, !- A10
+ set handle=@Exp handle, !- A11
+ set handle=handle/(handle+1), !- A12 % <--Probability to perform the action up to a full shaded
+fraction
+ set R=@RandomUniform 0 1,!- A13
+ if handle>R, !- A14
+ set Blinds=1, !- A15 % <--Lower blinds completely (actuator)
+ else, !- A16
+ set lambda=1.522*blinds-2.294, !- A17
+ set lambda=@Exp lambda, !- A18
+ set db = @RandomUniform 0 1, !- A19
+ set db = @ln (1-db), !- A20
+ set lambda = (lambda^alpha)*(0-1), !- A21
+ set db=db*lambda, !- A22
+ set db=db^(1/alpha), !- A23
+ set db=db*100, !- A24
+ set remainder=@Mod db 25,!- A25
+ set db=(db-remainder)/100, !- A26
+ set db=@max 0.25 db, !- A27
+ set blinds=@min blinds+db 1, !- A28 % <--Draw shaded fraction (actuator)
+ endif, !- A29
+ endif, !- A30
+ endif, !- A31
+ if Num_People == 1, !- A32 % <--Same for intermediate occupant presence
+ set handle=A27+B33*daylight+B34*unshadedfrac, !- A33
+ set handle=@Exp handle, !- A34
+ set handle=handle/(handle+1), !- A35 % <--Lowering probability at intermediate occupant presence
+ set R=@RandomUniform 0 1,!- A36
+ if handle>R, !- A37
+ set handle=A28+B35*E_glob+B36*unshadedfrac, !- A38
+ set handle=@Exp handle, !- A39
+ set handle=handle/(handle+1), !- A40 % <--Probability to perform the action up to a full shaded
+fraction
+ set R=@RandomUniform 0 1,!- A41
+ if handle>R, !- A42
+ set Blinds=1, !- A43 % <--Lower blinds completely (actuator)
+ else, !- A44
+ set lambda=1.522*blinds-2.294, !- A45
+ set lambda=@Exp lambda, !- A46
+ set db = @RandomUniform 0 1, !- A47
+ set db = @ln (1-db), !- A48
+ set lambda = (lambda^alpha)*(0-1), !- A49
+ set db=db*lambda, !- A50
+ set db=db^(1/alpha), !- A51
+ set db=db*100, !- A52
+ set remainder=@Mod db 25,!- A53
+ set db=(db-remainder)/100, !- A54
+ set db=@max 0.25 db, !- A55
+ set blinds=@min blinds+db 1, !- A56 % <--Draw shaded fraction (actuator)
+ endif, !- A57
+ endif, !- A58
+ endif, !- A59
+ if arr_event==1, !- A60
+ set handle=A29+B37*daylight+B38*unshadedfrac, !- A61
+ set handle=@Exp handle, !- A62
+ set R=@RandomUniform 0 1,!- A63
+ set handle=handle/(handle+1), !- A64 % <--Raising probability at arrival
+ if handle>R, !- A65
+ set handle=A31+B41*E_glob+B42*unshadedfrac, !- A66
+ set handle=@Exp handle, !- A67
+ set handle=handle/(handle+1), !- A68 % <--Probability to perform the action up to a full unshaded
+fraction
+ set R=@RandomUniform 0 1,!- A69
+ if handle>R, !- A70
+ set Blinds=0, !- A71 % <--Raise blinds completely (actuator)
+ else, !- A72
+ set db = @RandomUniform 0 1, !- A73
+ set db=db*100, !- A74
+ set remainder=@Mod db 25,!- A75
+ set db=(db-remainder)/100, !- A76
+ set blinds=@max blinds-db 0, !- A77 % <--Draw shaded fraction (actuator)
+ endif, !- A78
+ endif, !- A79
+ endif, !- A80
+ if Num_People == 1, !- A81 % <--Same for intermediate occupant presence
+ set handle=A30+B39*daylight+B40*unshadedfrac, !- A82
+ set handle=@Exp handle, !- A83
+ set handle=handle/(handle+1), !- A84 % <--Raising probability at intermediate occupant presence
+ set R=@RandomUniform 0 1,!- A85
+ if handle>R, !- A86
+ set handle=A31+B41*E_glob+B42*unshadedfrac, !- A87
+ set handle=@Exp handle, !- A88
+ set handle=handle/(handle+1), !- A89 % <--Probability to perform the action up to a full unshaded
+fraction
+ set R=@RandomUniform 0 1,!- A90
+ if handle>R, !- A91
+ set Blinds=0, !- A92 % <--Raise blinds completely (actuator)
+ else, !- A93
+ set db = @RandomUniform 0 1, !- A94
+ set db=db*100, !- A95
+ set remainder=@Mod db 25,!- A96
+ set db=(db-remainder)/100, !- A97
+ set blinds=@max blinds-db 0, !- A98 % <--Draw shaded fraction (actuator)
+ endif, !- A99
+ endif, !- A100
+ endif, !- A101
+ if Blinds==0, !- A102
+ set BottomShade=0, !- A103 % <--Actuator
+ set MidBottomShade=0, !- A104 % <--Actuator
+ set MidTopShade=0, !- A105 % <--Actuator
+ set TopShade=0, !- A106 % <--Actuator
+ elseif Blinds==0.25, !- A107
+ set BottomShade=0, !- A108 % <--Actuator
+ set MidBottomShade=0, !- A109 % <--Actuator
+ set MidTopShade=0, !- A110 % <--Actuator
+ set TopShade=1, !- A111 % <--Actuator
+ elseif Blinds==0.5, !- A112
+ set BottomShade=0, !- A113 % <--Actuator
+ set MidBottomShade=0, !- A114 % <--Actuator
+ set MidTopShade=1, !- A115 % <--Actuator
+ set TopShade=1, !- A116 % <--Actuator
+ elseif Blinds==0.75, !- A117
+ set BottomShade=0, !- A118 % <--Actuator
+ set MidBottomShade=1, !- A119 % <--Actuator
+ set MidTopShade=1, !- A120 % <--Actuator
+ set TopShade=1, !- A121 % <--Actuator
+ elseif Blinds==1, !- A122
+ set BottomShade=1, !- A123 % <--Actuator
+ set MidBottomShade=1, !- A124 % <--Actuator
+ set MidTopShade=1, !- A125 % <--Actuator
+ set TopShade=1, !- A126 % <--Actuator
+ endif; !- A127
+set A26=@RandomNormal 0-7.4 0.16 0-100 0, !- A29
+set A27=@RandomNormal 0-8 0.1 0-100 0, !- A30
+set A28=@RandomNormal 0-0.27 0.14 0-100 0, !- A31
+set A29=@RandomNormal 0-1.520 0.1 0-100 0, !- A32
+set A30=@RandomNormal 0-3.625 0.03 0-100 0, !- A33
+set A31=@RandomNormal 0.435 0.062 0 100, !- A34
+set B31=@RandomNormal 0.001 0.00001 0 100, !- A70
+set B32=@RandomNormal 2.17 0.16 0 100, !- A71
+set B33=@RandomNormal 0.0008 0.00001 0 100, !- A72
+set B34=@RandomNormal 1.27 0.086 0 100, !- A73
+set B35=@RandomNormal 0.00000091 0.00000133 0 1, !- A74
+set B36=@RandomNormal 0-2.23 0.16 0-100 100, !- A75
+set B37=@RandomNormal 0-0.000654 0.00005 0-1 0, !- A76
+set B38=@RandomNormal 0-3.139 0.07 0-100 0, !- A77
+set B39=@RandomNormal 0-0.000276 0.00002 0-1 0, !- A78 
+set B40=@RandomNormal 0-2.683 0.04 0-100 0, !- A79
+set B41=@RandomNormal 0-0.0000235 0.0000011 0-1 0, !- A80
+set B42=@RandomNormal 1.95 0.11 0 5, !- A81 
