@@ -1,0 +1,67 @@
+EnergyManagementSystem:Program,
+ Window_Haldi_2009, !- Name
+ if arr_event==1 && Tout>15, !- Program Line 1 % <--Arrival event and outdoor T threshold
+ set handle=A15+B15*Tin+B18*Tout+B21*Rain, !- Program Line 2 % <--Model parameters (A15; B15; B18;
+B21) and predictors (indoor T; outdoor T; rainfall)
+ set handle=@Exp handle, !- A4
+ set handle=handle/(handle+1), !- A5 % <--Logistic function
+ set R=@RandomUniform 0 1,!- A6 % <--Random number generation for stochastic model implementation
+ if handle>R, !- A7 % <--Comparison of logistic function with random number
+ set Window=1, !- A8 % <--Actuator
+ endif, !- A9
+ endif, !- A10
+ if Num_People>0, !- A11 % <--Window opening during intermediate occupant presence
+ set handle=A16+B16*Tin+B19*Tout+B22*Rain, !- A12
+ set handle=@Exp handle, !- A13
+ set handle=handle/(handle+1), !- A14 
+ set R=@RandomUniform 0 1,!- A15
+ if handle>R, !- A16
+ set Window=1, !- A17 % <--Actuator
+ endif, !- A18
+ endif, !- A19
+ if arr_event==1, !- A20 % <--Window closing at arrival
+ set handle=A18+B24*Tin+B27*Tout, !- A21
+ set handle=@Exp handle, !- A22
+ set handle=handle/(handle+1), !- A23
+ set R=@RandomUniform 0 1,!- A24
+ if handle>R, !- A25
+ set Window=0, !- A26 % <--Actuator
+ endif, !- A27
+ endif, !- A28
+ if dpt_event==1, !- A29 % <--Window closing at departure
+ set handle=A37+B48*Tin+B49*Tout, !- A30
+ set handle=@Exp handle, !- A31
+ set handle=handle/(handle+1), !- A32
+ set R=@RandomUniform 0 1,!- A33
+ if handle>R, !- A34
+ set Window=0, !- A35 % <--Actuator
+ endif, !- A36
+ endif, !- A37
+ if Num_People>0, !- A38 % <--Window closing during intermediate occupant presence
+ set handle=A19+B25*Tin+B28*Tout, !- A39
+ set handle=@Exp handle, !- A40
+ set handle=handle/(handle+1), !- A41
+ set R=@RandomUniform 0 1,!- A42
+ if handle>R, !- A43
+ set Window=0, !- A44 % <--Actuator
+ endif, !- A45 
+ endif; !- A46 
+ 
+ set A15=@RandomNormal 0-12 0.4 0-15 0, !- A18
+set B15=@RandomNormal 0.31 0.02 0 1, !- A55
+set B18=@RandomNormal 0.043 0.003 0 1, !- A58
+set B21=@RandomNormal 0-0.45 0.11 0-2 0, !- A60
+set A16=@RandomNormal 0-12.2 0.3 0-15 0, !- A19
+set B16=@RandomNormal 0.28 0.01 0 1, !- A56
+set B19=@RandomNormal 0.027 0.002 0 1, !- A59
+set B22=@RandomNormal 0-0.34 0.08 0-2 0, !- A61
+set A18=@RandomNormal 4 0.4 0 10, !- A21
+set B24=@RandomNormal 0-0.29 0.02 0-1 0, !- A63
+set B27=@RandomNormal 0-0.05 0.005 0-1 0, !- A66
+set A37=@RandomNormal 0-1.520 0.051 0-5 0, !- A40
+set B48=@RandomNormal 0.213 0.022 0-10 10, !- A87
+set B49=@RandomNormal 0-0.091 0.061 0-10 10, !- A88
+set A19=@RandomNormal 0-1.6 0.2 0-5 0, !- A22
+set B25=@RandomNormal 0-0.05 0.01 0-1 0, !- A64
+set B28=@RandomNormal 0-0.078 0.002 0-1 0, !- A67
+ 
